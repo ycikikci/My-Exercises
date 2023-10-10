@@ -1,0 +1,45 @@
+//This code takes txt file and divide it into two csv file. Depending on even length or odd length, the calculation differs. You could use it for exports that couldn't be used directly on Excel sheets because of the line constraints. Get your exports on txt and transform them on csv by getting two seperate file. Then, you could convert them to Excel files. (or ofcourse, you could use pandas library)
+
+import os
+os.chdir('C:/Users/.....')
+
+file=open("......txt","r")
+readd=dosya.readlines()
+first_length=round(len(readd)/2)
+lengthh=len(readd)
+modd=lengthh%first_length
+
+file1=open(".......csv","w")
+if modd==0:
+a=first_length+1
+for n in range(0,a,2):
+  file1.write(readd[n]+readd[n+1])
+
+file1.close()
+
+file1=open(".......csv","w")
+if modd==1:
+d=round(first_length)
+for n in range(0,d,2):
+  file1.write(readd[n]+readd[n+1])
+
+file1.close()
+
+file2=open(".......csv","w")
+if modd==0:
+b=first_length+1
+c=lengthh
+file2.write(readd[0])
+for n in range (b,c,1):
+  file2.write(readd[n-1])
+
+file2.close()
+
+file2=open("......csv","w")
+if modd==1:
+e=first_length+1
+f=lengthh
+file2.write(readd[0])
+for n in range(e,f,1):
+  file2.write(readd[n-1])
+file2.close()
