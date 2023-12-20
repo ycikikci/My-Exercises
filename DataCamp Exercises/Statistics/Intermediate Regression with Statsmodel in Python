@@ -1,1 +1,711 @@
-I am solving now, I will add the content later here.
+Fitting a parallel slopes linear regression
+In Introduction to Regression with statsmodels in Python, you learned to fit linear regression models with a single explanatory variable. In many cases, using only one explanatory variable limits the accuracy of predictions. To truly master linear regression, you need to be able to fit regression models with multiple explanatory variables.
+
+The case when there is one numeric explanatory variable and one categorical explanatory variable is sometimes called a "parallel slopes" linear regression due to the shape of the predictions — more on that in the next exercise.
+
+Here, you'll revisit the Taiwan real estate dataset. Recall the meaning of each variable.
+
+Variable	Meaning
+dist_to_mrt_station_m	Distance to nearest MRT metro station, in meters.
+n_convenience	No. of convenience stores in walking distance.
+house_age_years	The age of the house, in years, in 3 groups.
+price_twd_msq	House price per unit area, in New Taiwan dollars per meter squared.
+taiwan_real_estate is available.
+
+Import ols()from statsmodels.formula.api.
+Using the taiwan_real_estate dataset, model and fit the house price (in TWD per square meter) versus the number of nearby convenience stores.
+Print the coefficients of the model.
+Model the house price (in TWD per square meter) versus the house age (in years). Don't include an intercept term.
+Print the coefficients of the model.
+Model the house price versus the number of nearby convenience stores plus the house age. Don't include an intercept term.
+Print the coefficients of the model.
+
+# Import ols from statsmodels.formula.api
+from statsmodels.formula.api import ols
+
+# Fit a linear regression of price_twd_msq vs. n_convenience
+mdl_price_vs_conv = ols("price_twd_msq ~ n_convenience", data=taiwan_real_estate)
+mdl_price_vs_conv = mdl_price_vs_conv.fit()
+# Print the coefficients
+print(mdl_price_vs_conv.params)
+
+Interpreting parallel slopes coefficients
+For linear regression with a single numeric explanatory variable, there is an intercept coefficient and a slope coefficient. For linear regression with a single categorical explanatory variable, there is an intercept coefficient for each category.
+
+In the "parallel slopes" case, where you have a numeric and a categorical explanatory variable, what do the coefficients mean?
+
+taiwan_real_estate and mdl_price_vs_both are available.
+
+Question
+Look at the coefficients of mdl_price_vs_both. What is the meaning of the n_convenience coefficient?
+
+C
+
+Visualizing each explanatory variable
+Being able to see the predictions made by a model makes it easier to understand. In the case where there is only one explanatory variable, seaborn lets you do this without any manual calculation.
+
+To visualize the relationship between a numeric explanatory variable and the numeric response, you can draw a scatter plot with a linear trend line.
+
+To visualize the relationship between a categorical explanatory variable and the numeric response, you can draw a box plot.
+
+taiwan_real_estate is available.
+
+Import matplotlib.pyplot as plt and seaborn as sns.
+Using the taiwan_real_estate dataset, plot the house price versus the number of nearby convenience stores as a scatter plot with a linear trend line, without a confidence interval ribbon.
+Display the plot.
+Using the taiwan_real_estate dataset, plot the house price versus the house age as a box plot.
+
+# Import matplotlib.pyplot and seaborn
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Create a scatter plot with linear trend line of price_twd_msq vs. n_convenience
+sns.regplot(x="n_convenience",
+                y="price_twd_msq",
+                data=taiwan_real_estate)
+
+# Show the plot
+plt.show()
+
+Visualizing parallel slopes
+The two plots in the previous exercise gave very different predictions: one gave a predicted response that increased linearly with a numeric variable; the other gave a fixed response for each category. The only sensible way to reconcile these two conflicting predictions is to incorporate both explanatory variables in the model at once.
+
+When it comes to a linear regression model with a numeric and a categorical explanatory variable, seaborn doesn't have an easy, "out of the box" way to show the predictions.
+
+taiwan_real_estate is available and mdl_price_vs_both is available as a fitted model. seaborn is imported as sns and matplotlib.pyplot is imported as plt.
+
+Get the coefficients from mdl_price_vs_both, assigning to coeffs.
+Look at the output of coeffs.
+Assign each of the elements of coeffs to the appropriate variable: ic_15_30, ic_30_45, slope, and ic_0_15, in the correct order.
+
+# Extract the model coefficients, coeffs
+coeffs = mdl_price_vs_both.params
+
+# Print coeffs
+print(coeffs)
+
+# Assign each of the coeffs
+ic_0_15,ic_15_30,ic_30_45,slope=coeffs
+
+
+Predicting with a parallel slopes model
+While seaborn can automatically show you model predictions using sns.regplot(), in order to get those values to program with, you'll need to do the calculations yourself.
+
+Just as with the case of a single explanatory variable, the workflow has two steps: create a DataFrame of explanatory variables, then add a column of predictions.
+
+taiwan_real_estate is available and mdl_price_vs_both is available as a fitted model. seaborn, ols(), matplotlib.pyplot, pandas, and numpy are loaded as their default aliases. This will also be the case for the remainder of the course. In addition, ìtertools.product is available as well.
+
+Create n_convenience as an array of numbers from 0 to 10.
+Extract the unique values of the house_age_years column of taiwan_real_estate into the array house_age_years.
+Create p, which should contain the Cartesian product of all values of n_convenience and house_age_years.
+Transform p to a DataFrame and name the columns "n_convenience" and "house_age_years".
+
+# Create n_convenience as an array of numbers from 0 to 10
+n_convenience = np.arange(0,11,1)
+
+# Extract the unique values of house_age_years
+house_age_years = taiwan_real_estate["house_age_years"].unique()
+
+# Create p as all combinations of values of n_convenience and house_age_years
+p = product(n_convenience, house_age_years)
+
+# Transform p to a DataFrame and name the columns
+explanatory_data = pd.DataFrame(p,columns=["n_convenience","house_age_years"])
+
+print(explanatory_data)
+
+Visualizing parallel slopes model predictions
+To make sure you've got the right predictions from the previous exercise, you can add them to a seaborn plot. To visualize multiple regression predictions, you use the same procedure as with linear regression: draw a scatter plot with a trend line and add a second layer of prediction points on the same plot. As you've seen in a previous exercise, seaborn can't plot the parallel slopes model directly. Therefore, you'll first re-extract the model coefficients before you plot the prediction points.
+
+taiwan_real_estate and prediction_data are available, and mdl_price_vs_both is available as a fitted model.
+
+Get the coefficients from mdl_price_vs_both, assigning to coeffs.
+Look at coeffs and see which coefficient corresponds to which element.
+Assign each of the elements of coeffs to the appropriate variable: ic_15_30, ic_30_45, slope, and ic_0_15, in the right order.
+
+# Extract the model coefficients, coeffs
+coeffs = mdl_price_vs_both.params
+
+# Print coeffs
+print(coeffs)
+
+# Assign each of the coeffs
+ic_0_15, ic_15_30, ic_30_45, slope  = coeffs
+
+Manually calculating predictions
+As with simple linear regression, you can also manually calculate the predictions from the model coefficients. The only change for the parallel slopes case is that the intercept is different for each category of the categorical explanatory variable. That means you need to consider the case when each category occurs separately.
+
+taiwan_real_estate, mdl_price_vs_both, and explanatory_data are available; ic_0_15, ic_15_30, ic_30_45, and slope from the previous exercise are also loaded.
+
+Define a list, conditions, with three conditional statements: house_age_years is "0 to 15", house_age_years is "15 to 30", and house_age_years is "30 to 45".
+Define a list, choices, with the extracted intercepts from mdl_price_vs_both. These correspond to each of the conditions.
+Create an array of intercepts using np.select().
+Create prediction_data: start with explanatory_data, assign intercept as the array of intercepts, and price_twd_msq as the manually calculated predictions.
+
+# Define conditions
+conditions = [explanatory_data["house_age_years"] == "0 to 15",
+    explanatory_data["house_age_years"] == "15 to 30",
+    explanatory_data["house_age_years"] == "30 to 45"]
+
+
+# Define choices
+choices = [ic_0_15, ic_15_30, ic_30_45]
+
+# Create array of intercepts for each house_age_year category
+intercept = np.select(conditions, choices)
+
+# Create prediction_data with columns intercept and price_twd_msq
+prediction_data = explanatory_data.assign(
+    intercept = intercept,
+    price_twd_msq = intercept + slope * explanatory_data["n_convenience"])
+
+print(prediction_data)
+
+Comparing coefficients of determination
+Recall that the coefficient of determination is a measure of how well the linear regression line fits the observed values. An important motivation for including several explanatory variables in a linear regression is that you can improve the fit compared to considering only a single explanatory variable.
+
+Here you'll compare the coefficient of determination for the three Taiwan house price models, to see which gives the best result.
+
+mdl_price_vs_conv, mdl_price_vs_age, and mdl_price_vs_both are available as fitted models.
+
+Print the unadjusted and adjusted coefficients of determination for mdl_price_vs_conv.
+Do the same for mdl_price_vs_age and mdl_price_vs_both.
+
+# Print the coeffs of determination for mdl_price_vs_conv
+print("rsquared_conv: ", mdl_price_vs_conv.rsquared)
+print("rsquared_adj_conv: ", mdl_price_vs_conv.rsquared_adj)
+
+# Print the coeffs of determination for mdl_price_vs_age
+print("rsquared_age: ", mdl_price_vs_age.rsquared)
+print("rsquared_adj_age: ", mdl_price_vs_age.rsquared_adj)
+
+# Print the coeffs of determination for mdl_price_vs_both
+print("rsquared_both: ", mdl_price_vs_both.rsquared)
+print("rsquared_adj_both: ", mdl_price_vs_both.rsquared_adj)
+
+Comparing residual standard error
+The other common metric for assessing model fit is the residual standard error (RSE), which measures the typical size of the residuals.
+
+RSE can't directly be retrieved using statsmodels, but you can retrieve the mean squared error (MSE) using the .mse_resid attribute. By taking the square root of the MSE, you can get the RSE.
+
+In the last exercise, you saw how including both explanatory variables into the model increased the coefficient of determination. How do you think using both explanatory variables will change the RSE?
+
+mdl_price_vs_conv, mdl_price_vs_age, and mdl_price_vs_both are available as fitted models.
+
+Print the residual standard error for mdl_price_vs_conv.
+Do the same for mdl_price_vs_age and mdl_price_vs_both
+
+# Print the RSE for mdl_price_vs_conv
+print("rse_conv: ",np.sqrt(mdl_price_vs_conv.mse_resid))
+# Print the RSE for mdl_price_vs_age
+print("rse_age: ", np.sqrt(mdl_price_vs_age.mse_resid))
+
+# Print RSE for mdl_price_vs_both
+print("rse_both: ", np.sqrt(mdl_price_vs_both.mse_resid))
+
+One model per category
+The model you ran on the whole dataset fits some parts of the data better than others. It's worth taking a look at what happens when you run a linear model on different parts of the dataset separately, to see if each model agrees or disagrees with the others.
+
+taiwan_real_estate is available.
+
+Filter taiwan_real_estate for rows where house_age_years is "0 to 15", assigning to taiwan_0_to_15.
+Repeat this for the "15 to 30" and "30 to 45" house age categories.
+
+# Filter for rows where house age is 0 to 15 years
+taiwan_0_to_15 = taiwan_real_estate[taiwan_real_estate['house_age_years'] == "0 to 15"]
+
+# Filter for rows where house age is 15 to 30 years
+taiwan_15_to_30 = taiwan_real_estate[taiwan_real_estate['house_age_years'] == "15 to 30"]
+
+# Filter for rows where house age is 30 to 45 years
+taiwan_30_to_45 = taiwan_real_estate[taiwan_real_estate['house_age_years'] == "30 to 45"]
+
+Predicting multiple models
+In order to see what each category's model is doing, it's helpful to make predictions from them. The flow is exactly the same as the flow for making predictions on the whole model, though remember that you only have a single explanatory variable in these models.
+
+The models mdl_0_to_15, mdl_15_to_30 and mdl_30_to_45 are available.
+
+Create a DataFrame called explanatory_data with one column n_convenience containing the numbers zero to ten.
+
+# Create explanatory_data, setting no. of conv stores from  0 to 10
+explanatory_data = pd.DataFrame({'n_convenience':np.arange(0, 11)})
+
+Visualizing multiple models
+In the last two exercises, you ran models for each category of house ages separately, then calculated predictions for each model. Now it's time to visualize those predictions to see how they compare.
+
+When you use sns.lmplot() with the hue argument set to the categorical variable, you get multiple trend lines, each with their own slope. This is in contrast with the parallel slopes model you saw in Chapter 1, where all models had the same slope.
+
+taiwan_real_estate is available. prediction_data is loaded as a concatenated DataFrame of all house ages.
+
+Using taiwan_real_estate, plot price_twd_msq versus n_convenience, with a different trend line for each house age category in house_age_years. Remove the confidence interval.
+
+# Plot the trend lines of price_twd_msq vs. n_convenience for each house age category
+sns.lmplot(x='n_convenience',
+     y='price_twd_msq',
+     data=taiwan_real_estate,
+     hue='house_age_years',
+     ci=None,
+     legend_out=False)
+
+plt.show()
+
+Assessing model performance
+To test which approach is best — the whole dataset model or the models for each house age category — you need to calculate some metrics. Here, you'll compare the coefficient of determination and the residual standard error for each model.
+
+Four models of price versus no. of convenience stores (mdl_all_ages, mdl_0_to_15, mdl_15_to_30, and mdl_30_to_45) are available.
+
+Print the coefficient of determination for mdl_all_ages, mdl_0_to_15, mdl_15_to_30, and mdl_30_to_45.
+Print the residual standard error (RSE) for mdl_all_ages, mdl_0_to_15, mdl_15_to_30, and mdl_30_to_45.
+
+# Print the coeff. of determination for mdl_all_ages
+print("R-squared for mdl_all_ages: ", mdl_all_ages.rsquared)
+
+# Print the coeff. of determination for mdl_0_to_15
+print("R-squared for mdl_0_to_15: ", mdl_0_to_15.rsquared)
+
+# Print the coeff. of determination for mdl_15_to_30
+print("R-squared for mdl_15_to_30: ", mdl_15_to_30.rsquared)
+
+# Print the coeff. of determination for mdl_30_to_45
+print("R-squared for mdl_30_to_45: ", mdl_30_to_45.rsquared)
+
+Specifying an interaction
+So far you've used a single parallel slopes model, which gave an OK fit for the whole dataset, then three separate models for each house age category, which gave a better fit for each individual category, but was clunky because you had three separate models to work with and explain. Ideally, you'd have a single model that had all the predictive power of the individual models.
+
+Defining this single model is achieved through adding interactions between explanatory variables. The syntax of statsmodels.formula is flexible, and gives you a couple of options, depending on whether you prefer concise code that is quick to type and to read, or explicit code that describes what you are doing in detail.
+
+taiwan_real_estate is available.
+
+Fit a linear regression of price_twd_msq versus n_convenience and house_age_years, using the "times" syntax to implicitly generate an interaction between them.
+Print the coefficients.
+Fit a linear regression of price_twd_msq versus n_convenience and house_age_years, using the "colon" syntax to explicitly generate an interaction between them.
+
+# Model price vs both with an interaction using "times" syntax
+mdl_price_vs_both_inter = ols('price_twd_msq ~ n_convenience * house_age_years', data=taiwan_real_estate).fit()
+
+# Print the coefficients
+print(mdl_price_vs_both_inter.params)
+
+Interactions with understandable coeffs
+The previous model with the interaction term returned coefficients that were a little tricky to interpret. In order clarify what the model is predicting, you can reformulate the model in a way that returns understandable coefficients. For further clarity, you can compare the results to the models on the separate house age categories (mdl_0_to_15, mdl_15_to_30, and mdl_30_to_45).
+
+taiwan_real_estate, mdl_0_to_15, mdl_15_to_30, and mdl_30_to_45 are available.
+
+Fit a linear regression of price_twd_msq versus house_age_years plus an interaction between n_convenience and house_age_years, and no global intercept, using the taiwan_real_estate dataset.
+For comparison, print the coefficients for the three models for each category: mdl_0_to_15, mdl_15_to_30, and mdl_30_to_45.
+
+# Model price vs. house age plus an interaction, no intercept
+mdl_readable_inter =ols('price_twd_msq~house_age_years + n_convenience:house_age_years + 0',data=taiwan_real_estate).fit()
+
+# Print the coefficients for mdl_0_to_15
+print("mdl_0_to_15 coefficients:", "\n", mdl_0_to_15.params)
+
+# Print the coefficients for mdl_15_to_30
+print("mdl_15_to_30 coefficients:", "\n", mdl_15_to_30.params)
+
+# Print the coefficients for mdl_30_to_45
+print("mdl_30_to_45 coefficients:", "\n", mdl_30_to_45.params)
+
+# Print the coefficients for mdl_readable_inter
+print("\n", "mdl_readable_inter coefficients:", "\n", mdl_readable_inter.params)
+
+Predicting with interactions
+As with every other regression model you've created, the fun part is making predictions. Fortunately, the code flow for this case is the same as the one without interactions — statsmodels can handle calculating the interactions without any extra prompting from you. The only thing you need to remember is the trick for getting combinations of explanatory variables.
+
+mdl_price_vs_both_inter is available as a fitted model, itertools.product is loaded.
+
+Create the DataFrame explanatory_data, formed from all combinations of the following variables:
+
+n_convenience should take the numbers zero to ten.
+house_age_years should take the unique values of the house_age_years column of taiwan_real_estate.
+
+# Create n_convenience as an array of numbers from 0 to 10
+n_convenience = np.arange(0, 10)
+
+# Extract the unique values of house_age_years
+house_age_years = taiwan_real_estate['house_age_years'].unique()
+
+# Create p as all combinations of values of n_convenience and house_age_years
+p = product(n_convenience, house_age_years)
+
+# Transform p to a DataFrame and name the columns
+explanatory_data = pd.DataFrame(p, columns=['n_convenience','house_age_years'])
+
+# Print it
+print(explanatory_data)
+
+Manually calculating predictions with interactions
+In order to understand how .predict() works, it's time to calculate the predictions manually again. For this model, there are three separate lines to calculate for, and in each one, the prediction is an intercept plus a slope times the numeric explanatory value. The tricky part is getting the right intercept and the right slope for each case.
+
+mdl_price_vs_both_inter and explanatory_data are available.
+
+Get the coefficients from mdl_price_vs_both_inter, assigning to coeffs.
+Get the three intercept coefficients and three slope coefficients from coeffs, assigning to ic_0_15, ic_15_30, and ic_30_45, and slope_0_15, slope_15_30, and slope_30_45, respectively.
+
+# Get the coefficients from mdl_price_vs_both_inter
+coeffs = mdl_price_vs_both_inter.params
+
+# Assign each of the elements of coeffs
+ic_0_15, ic_15_30, ic_30_45, slope_0_15, slope_15_30, slope_30_45 = coeffs
+
+Modeling eBay auctions
+Sometimes modeling a whole dataset suggests trends that disagree with models on separate parts of that dataset. This is known as Simpson's paradox. In the most extreme case, you may see a positive slope on the whole dataset, and negative slopes on every subset of that dataset (or the other way around).
+
+Over the next few exercises, you'll look at eBay auctions of Palm Pilot M515 PDA models.
+
+variable	meaning
+price	Final sale price, USD
+openbid	The opening bid, USD
+auction_type	How long did the auction last?
+auctions is available as a pandas DataFrame.
+
+Look at the structure of the auctions dataset and familiarize yourself with its columns.
+Fit a linear regression model of price versus openbid, using the auctions dataset. Look at the coefficients.
+
+# Take a glimpse at the dataset
+print(auctions.info())
+
+# Model price vs. opening bid using auctions
+mdl_price_vs_openbid =ols('price~openbid', data=auctions).fit()
+
+# See the result
+print(mdl_price_vs_openbid.params)
+
+
+Modeling each auction type
+You just saw that the opening bid price appeared not to affect the final sale price of Palm Pilots in the eBay auctions. Now let's look at what happens when you model the three auction types (3 day, 5 day, and 7 day) separately.
+
+auctions is available.
+
+Fit a linear regression model of price versus openbid and auction_type, with an interaction between the explanatory variables, without a global intercept term, and using the auctions dataset. Look at the coefficients.
+
+# Fit linear regression of price vs. opening bid and auction type, with an interaction, without intercept
+mdl_price_vs_both = ols("price ~ auction_type + openbid:auction_type + 0", data=auctions).fit()
+
+# See the result
+print(mdl_price_vs_both.params)
+
+Visualizing three numeric variables
+There are also some "flat" alternatives to 3D plots that provide easier interpretation, though they require a little thinking about to make. A good approach is plotting the two numeric explanatory variables on the x- and y-axis of a scatter plot, and coloring the points according to the response variable.
+
+taiwan_real_estate is available.
+
+Calculate the square-root of the distance to the nearest MRT stop as sqrt_dist_to_mrt_m.
+With the taiwan_real_estate dataset, draw a scatter plot of sqrt_dist_to_mrt_m versus the number of nearby convenience stores, colored by house price.
+
+# Transform dist_to_mrt_m to sqrt_dist_to_mrt_m
+taiwan_real_estate["sqrt_dist_to_mrt_m"] = np.sqrt(taiwan_real_estate['dist_to_mrt_m'])
+
+# Draw a scatter plot of sqrt_dist_to_mrt_m vs. n_convenience colored by price_twd_msq
+sns.scatterplot(x='n_convenience',y='sqrt_dist_to_mrt_m',data=taiwan_real_estate,hue='price_twd_msq')
+# Show the plot
+plt.show()
+
+Modeling two numeric explanatory variables
+You already saw how to make a model and predictions with a numeric and a categorical explanatory variable. The code for modeling and predicting with two numeric explanatory variables is the same, other than a slight difference in how to specify the explanatory variables to make predictions against.
+
+Here you'll model and predict the house prices against the number of nearby convenience stores and the square-root of the distance to the nearest MRT station.
+
+taiwan_real_estate is available with the square-root transformed variable sqrt_dist_to_mrt_m. itertools.product is also loaded.
+
+Fit a linear regression of house price versus the number of convenience stores and the square-root of the distance to the nearest MRT stations, without an interaction, using the taiwan_real_estate dataset.
+
+# Fit linear regression of price vs. no. of conv. stores and sqrt dist. to nearest MRT, no interaction
+mdl_price_vs_conv_dist = ols('price_twd_msq~n_convenience+sqrt_dist_to_mrt_m', data=taiwan_real_estate).fit()
+
+# See the result
+print(mdl_price_vs_conv_dist.params)
+
+Visualizing two numeric explanatory variables
+The code for visualizing two numeric explanatory variables is the same as you've seen before: create a layer of the actual data points, and add a layer of the prediction points to see how they match. In the case of two numeric explanatory variables, the prediction point layer will look like a grid.
+
+taiwan_real_estate and prediction_data are available with the square-root transformed variable sqrt_dist_to_mrt_m.
+
+Using taiwan_real_estate, create a scatter plot of sqrt_dist_to_mrt_m versus n_convenience, colored by price_twd_msq.
+Create an additional scatter plot of prediction_data, without a legend, and with marker set to "s" (for squares).
+
+# Create scatter plot of taiwan_real_estate
+sns.scatterplot(x='n_convenience', y='sqrt_dist_to_mrt_m', data=taiwan_real_estate, hue='price_twd_msq')
+
+# Create scatter plot of prediction_data without legend
+sns.scatterplot(x='n_convenience', y='sqrt_dist_to_mrt_m', data=prediction_data,hue='price_twd_msq', legend=False, marker="s")
+
+# Show the plot
+plt.show()
+
+Including an interaction
+Just as in the case with one numeric and one categorical explanatory variable, it is possible for numeric explanatory variables to interact. With this model structure, you'll get a third slope coefficient: one for each explanatory variable and one for the interaction.
+
+Here, you'll run, predict, and plot the same model as in the previous exercise, but this time including an interaction between the explanatory variables.
+
+Change the name of the model to mdl_price_vs_conv_dist_inter.
+Adapt the rest of the code from the previous exercise to include an interaction.
+
+# Convert to mdl_price_vs_conv_dist_inter
+mdl_price_vs_conv_dist_inter = ols("price_twd_msq ~ n_convenience + sqrt_dist_to_mrt_m + n_convenience*sqrt_dist_to_mrt_m", data=taiwan_real_estate).fit()
+# Use mdl_price_vs_conv_dist_inter to make predictions
+n_convenience = np.arange(0, 11)
+sqrt_dist_to_mrt_m = np.arange(0, 81, 10)
+p = product(n_convenience, sqrt_dist_to_mrt_m)
+explanatory_data = pd.DataFrame(p, columns=["n_convenience", "sqrt_dist_to_mrt_m"])
+prediction_data = explanatory_data.assign(
+    price_twd_msq = mdl_price_vs_conv_dist_inter.predict(explanatory_data))
+
+sns.scatterplot(x="n_convenience", y="sqrt_dist_to_mrt_m", data=taiwan_real_estate, hue="price_twd_msq", legend=False)
+
+sns.scatterplot(x="n_convenience", y="sqrt_dist_to_mrt_m", data=prediction_data, hue="price_twd_msq", marker="s")
+
+plt.show()
+
+Visualizing many variables
+As you begin to consider more variables, plotting them all at the same time becomes increasingly difficult. In addition to using x and y scales for two numeric variables, you can use color for a third numeric variable, and you can use faceting for categorical variables. And that's about your limit before the plots become too difficult to interpret. There are some specialist plot types like correlation heatmaps and parallel coordinates plots that will handle more variables, but they give you much less information about each variable, and they aren't great for visualizing model predictions.
+
+Here you'll push the limits of the scatter plot by showing the house price, the distance to the MRT station, the number of nearby convenience stores, and the house age, all together in one plot.
+
+taiwan_real_estate is available.
+
+Create a facet grid for each house_age_years in taiwan_real_estate.
+Using the taiwan_real_estate dataset, draw a scatter plot of n_convenience versus sqrt_dist_to_mrt_m, colored by price_twd_msq.
+
+# Prepare the grid using taiwan_real_estate, for each house age category, colored by price_twd_msq
+grid = sns.FacetGrid(data=taiwan_real_estate,
+            col="house_age_years",
+            hue="price_twd_msq",
+            palette="plasma")
+
+# Plot the scatterplots with sqrt_dist_to_mrt_m on the x-axis and n_convenience on the y-axis
+grid.map(sns.scatterplot,
+         "sqrt_dist_to_mrt_m",
+         "n_convenience")
+# Show the plot (brighter colors mean higher prices)
+plt.show()
+
+Different levels of interaction
+Once you have three explanatory variables, the number of options for specifying interactions increases. You can specify no interactions. You can specify 2-way interactions, which gives you model coefficients for each pair of variables. The third option is to specify all the interactions, which means the three 2-way interactions and the interaction between all three explanatory variables.
+
+As the number of explanatory variables increases further, the number of interaction possibilities rapidly increases.
+
+taiwan_real_estate is available.
+
+Fit a linear regression of house price versus n_convenience, sqrt_dist_to_mrt_m, and house_age_years. Don't include a global intercept, and don't include any interactions.
+Fit a linear regression of house price versus n_convenience, sqrt_dist_to_mrt_m, and house_age_years. Don't include a global intercept, but do include 2-way and 3-way interactions between the explanatory variables.
+Fit a linear regression of house price versus n_convenience, sqrt_dist_to_mrt_m, and house_age_years. Don't include a global intercept, but do include 2-way (not 3-way) interactions between the explanatory variables.
+
+# Model price vs. no. of conv. stores, sqrt dist. to MRT station & house age, no global intercept, no interactions
+mdl_price_vs_all_no_inter = ols('price_twd_msq~n_convenience+sqrt_dist_to_mrt_m+house_age_years', data=taiwan_real_estate).fit()
+
+# See the result
+print(mdl_price_vs_all_no_inter.params)
+
+Predicting again
+You've followed the prediction workflow several times now with different combinations of explanatory variables. Time to try it once more on the model with three explanatory variables. Here, you'll use the model with 3-way interactions, though the code is the same when using any of the three models from the previous exercise.
+
+taiwan_real_estate and mdl_price_vs_all_3_way_inter are available. itertools.product is loaded.
+
+Create explanatory_data, formed from combinations of the following variables, in this order:
+
+n_convenience should take the numbers zero to ten.
+sqrt_dist_to_mrt_m should take a sequence from zero to eighty in steps of ten.
+house_age_years should take the unique values of the house_age_years column of taiwan_real_estate.
+
+# Create n_convenience as an array of numbers from 0 to 10
+n_convenience = np.arange(0, 11)
+
+# Create sqrt_dist_to_mrt_m as an array of numbers from 0 to 80 in steps of 10
+sqrt_dist_to_mrt_m = np.arange(0, 81, 10)
+
+# Create house_age_years with unique values
+house_age_years = taiwan_real_estate['house_age_years'].unique()
+
+# Create p as all combinations of n_convenience, sqrt_dist_to_mrt_m, and house_age_years, in that order
+p = product(n_convenience, sqrt_dist_to_mrt_m, house_age_years)
+
+# Transform p to a DataFrame and name the columns
+explanatory_data = pd.DataFrame(p, columns=['n_convenience','sqrt_dist_to_mrt_m','house_age_years'])
+
+# See the result
+print(explanatory_data)
+
+Linear regression algorithm
+To truly understand linear regression, it is helpful to know how the algorithm works. The code for ols() is hundreds of lines because it has to work with any formula and any dataset. However, in the case of simple linear regression for a single dataset, you can implement a linear regression algorithm in just a few lines of code.
+
+The workflow is:
+
+First, write a function to calculate the sum of squares using this general syntax:
+def function_name(args):
+  # some calculations with the args
+  return outcome
+Second, use scipy's minimize function find the coefficients that minimize this function.
+The explanatory values (the n_convenience column of taiwan_real_estate) are available as x_actual. The response values (the price_twd_msq column of taiwan_real_estate) are available as y_actual.
+
+minimize() is also loaded.
+
+Complete the function body.
+
+Unpack coeffs to intercept and slope, respectively.
+Calculate the predicted y-values as the intercept plus the slope times the actual x-values.
+Calculate the differences between actual and predicted y-values.
+Calculate the sum of squares: square the differences in y-values and take the sum.
+Return the sum of squares.
+
+# Complete the function
+def calc_sum_of_squares(coeffs):
+    # Unpack coeffs
+    intercept, slope = coeffs
+    # Calculate predicted y-values
+    y_pred = intercept + slope * x_actual
+    # Calculate differences between y_pred and y_actual
+    y_diff = y_pred - y_actual
+    # Calculate sum of squares
+    sum_sq = np.sum(y_diff ** 2)
+    # Return sum of squares
+    return sum_sq
+  
+# Test the function with intercept 10 and slope 1
+print(calc_sum_of_squares([10, 1]))
+
+Logistic regression with two explanatory variables
+Logistic regression also supports multiple explanatory variables. To include multiple explanatory variables in logistic regression models, the syntax is the same as for linear regressions.
+
+Here you'll fit a model of churn status with both of the explanatory variables from the dataset: the length of customer relationship and the recency of purchase, and their interaction.
+
+churn is available.
+
+Import the logit() function from statsmodels.formula.api.
+Fit a logistic regression of churn status, has_churned, versus length of customer relationship, time_since_first_purchase, and recency of purchase, time_since_last_purchase, and an interaction between the explanatory variables.
+
+# Import logit
+from statsmodels.formula.api import logit
+
+# Fit a logistic regression of churn status vs. length of relationship, recency, and an interaction
+mdl_churn_vs_both_inter = logit('has_churned~time_since_first_purchase*time_since_last_purchase', data=churn).fit()
+# Print the coefficients
+print(mdl_churn_vs_both_inter.params)
+
+Logistic regression prediction
+As with linear regression, the joy of logistic regression is that you can make predictions. Let's step through the prediction flow one more time!
+
+churn and mdl_churn_vs_both_inter are available; itertools.product is loaded.
+
+Create a DataFrame explanatory_data of all combinations of these explanatory variables:
+
+Set time_since_first_purchase to a sequence from minus two to four in steps of 0.1.
+Set time_since_last_purchase to a sequence from minus one to six in steps of 0.1.
+Name the columns of explanatory_data as "time_since_first_purchase" and "time_since_last_purchase".
+
+# Create time_since_first_purchase
+time_since_first_purchase = np.arange(-2, 4.1, 0.1)
+
+# Create time_since_last_purchase
+time_since_last_purchase = np.arange(-1, 6.1, 0.1)
+
+# Create p as all combinations of values of time_since_first_purchase and time_since_last_purchase
+p = product(time_since_first_purchase, time_since_last_purchase)
+
+# Transform p to a DataFrame and name the columns
+explanatory_data = pd.DataFrame(p, columns=["time_since_first_purchase",
+                                            "time_since_last_purchase"])
+
+# Print the result
+print(explanatory_data)
+
+Visualizing multiple explanatory variables
+Plotting has similar issues as with the linear regression case: it quickly becomes difficult to include more numeric variables in the plot. Here you'll look at the case of two numeric explanatory variables, and the solution is basically the same as before: use color to denote the response.
+
+Here there are only two possible values of response (zero and one), both in the actual dataset and the predicted dataset.
+
+churn and prediction_data are available.
+
+Using the churn dataset, plot the recency of purchase, time_since_last_purchase, versus the length of customer relationship, time_since_first_purchase, colored by whether or not the customer churned, has_churned.
+
+# Using churn, plot recency vs. length of relationship, colored by churn status
+sns.scatterplot(x='time_since_first_purchase',y='time_since_last_purchase',data=churn,hue='has_churned')
+# Show the plot
+plt.show()
+
+Confusion matrix
+When the response variable has just two outcomes, like the case of churn, the measures of success for the model are "how many cases where the customer churned did the model correctly predict?" and "how many cases where the customer didn't churn did the model correctly predict?". These can be found by generating a confusion matrix and calculating summary metrics on it.
+
+Recall the following definitions:
+
+Accuracy is the proportion of predictions that are correct.
+ 
+Sensitivity is the proportion of true observations that are correctly predicted by the model as being true.
+ 
+
+Specificity is the proportion of false observations that are correctly predicted by the model as being false.
+ 
+
+churn and mdl_churn_vs_both_inter are available.
+
+Create the confusion matrix, conf_matrix.
+
+# Create conf_matrix
+conf_matrix = mdl_churn_vs_both_inter.pred_table()
+print(mdl_churn_vs_both_inter.summary())
+
+# Print it
+print(conf_matrix)
+
+Cumulative distribution function
+Understanding the logistic distribution is key to understanding logistic regression. Like the normal (Gaussian) distribution, it is a probability distribution of a single continuous variable. Here you'll visualize the cumulative distribution function (CDF) for the logistic distribution. That is, if you have a logistically distributed variable, x, and a possible value, xval, that x could take, then the CDF gives the probability that x is less than xval.
+
+The logistic distribution's CDF is calculated with the logistic function (hence the name). The plot of this has an S-shape, known as a sigmoid curve. An important property of this function is that it takes an input that can be any number from minus infinity to infinity, and returns a value between zero and one.
+
+Import logistic from scipy.stats.
+Create x, an array of numbers ranging from minus ten to ten in steps of 0.1.
+
+# Import logistic
+from scipy.stats import logistic
+
+# Create x ranging from minus ten to ten in steps of 0.1
+x = np.arange(-10, 10.1, .1)
+
+Inverse cumulative distribution function
+The logistic function (logistic distribution CDF) has another important property: each x input value is transformed to a unique value. That means that the transformation can be reversed. The logit function is the name for the inverse logistic function, which is also the logistic distribution inverse cumulative distribution function. (All three terms mean exactly the same thing.)
+
+The logit function takes values between zero and one, and returns values between minus infinity and infinity.
+
+logistic is available from scipy.stats.
+
+Create p, an array of numbers ranging from 0.001 to 0.999 in steps of 0.001.
+
+# Create p ranging from 0.001 to 0.999 in steps of 0.001
+p = np.arange(0.001, 1, 0.001)
+
+Logistic regression algorithm
+Let's dig into the internals and implement a logistic regression algorithm. Since statsmodels's logit() function is very complex, you'll stick to implementing simple logistic regression for a single dataset.
+
+Rather than using sum of squares as the metric, we want to use likelihood. However, log-likelihood is more computationally stable, so we'll use that instead. Actually, there is one more change: since we want to maximize log-likelihood, but minimize() defaults to finding minimum values, it is easier to calculate the negative log-likelihood.
+
+The log-likelihood value for each observation is
+
+The metric to calculate is the negative sum of these log-likelihood contributions.
+
+The explanatory values (the time_since_last_purchase column of churn) are available as x_actual. The response values (the has_churned column of churn) are available as y_actual. logistic is imported from scipy.stats, and logit() and minimize() are also loaded.
+
+Complete the function body.
+
+Unpack coeffs to intercept and slope, respectively.
+Calculate the predicted y-values as the intercept plus the slope times the actual x-values, transformed with the logistic CDF.
+Calculate the log-likelihood as the log of the predicted y-values times the actual y-values, plus the log of one minus the predicted y-values times one minus the actual y-values.
+Calculate the negative sum of the log-likelihood.
+Return the negative sum of the log-likelihood.
+
+# Complete the function
+def calc_neg_log_likelihood(coeffs):
+    # Unpack coeffs
+    intercept, slope = coeffs
+    # Calculate predicted y-values
+    y_pred = logistic.cdf(intercept + slope * x_actual)
+    # Calculate log-likelihood
+    log_likelihood = np.log(y_pred) * y_actual + np.log(1 - y_pred) * (1 - y_actual)
+    # Calculate negative sum of log_likelihood
+    neg_sum_ll = -np.sum(log_likelihood)
+    # Return negative sum of log_likelihood
+    return neg_sum_ll
+
+# Test the function with intercept 10 and slope 1
+print(calc_neg_log_likelihood([10, 1]))
+
+
