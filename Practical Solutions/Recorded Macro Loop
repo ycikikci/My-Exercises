@@ -1,0 +1,39 @@
+//Numbers should be updated depending to your column and row numbers.
+
+Sub Macro1()
+For i=2 To 68145
+Range(Cells(i,10),Cells(i,24)).Select
+
+//Recorded Macro should be pasted here.
+
+Next i
+End Sub
+--------------------------------------------------------------------------------------------------
+//An example is written below.
+
+Sub Macro1()
+For i=2 To 68145
+  Range(Cells(i,10),Cells(i,24)).Select
+  Selection.FormatConditions.AddColorScaleType:=3
+  Selection.FormatConditions(Selection.FormatConditions.Count).SetFirstPriority
+  Selection.FormatConditions(1).ColorScaleCriteria(1).Type=_
+    xlConditionValueLowestValue
+  With Selection.FormatConditions(1).ColorScaleCriteria(1).FormatColor
+    .Color=8109667
+    .TintAndShade=0
+  End With
+  Selection.FormatConditions(1).ColorScaleCriteria(2).Type=_
+    xlConditionValuePercentile
+  Selection.FormatConditions(1).ColorScaleCriteria(2).Value=50
+  With Selection.FormatConditions(1).ColorScaleCriteria(2).FormatColor
+    .Color=8711167
+    .TintAndShade=0
+  End With
+  Selection.FormatConditions(1).ColorScaleCriteria(3).Type=_
+    xlConditionValueHighestValue
+  With Selection.FormatConditions(1).ColorScaleCriteria(3).FormarColor
+    .Color=7039480
+    .TintAndShade=0
+  End With
+Next i
+End Sub
