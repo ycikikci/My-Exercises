@@ -1,0 +1,23 @@
+import matplotlib.pyplot as plt
+
+years = [2015, 2016, 2017, 2018, 2019, 2020]
+class_population = [50, 55, 60, 65, 70, 75]
+
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.plot(years, class_population, color='cyan', marker='o', linestyle='-', linewidth=2, label='Class Population')
+
+ax.set_title('Class Population Over Time', fontsize=16, color='white')
+ax.set_xlabel('Year', fontsize=14, color='white')
+ax.set_ylabel('Population', fontsize=14, color='white')
+
+fig.patch.set_facecolor('black')
+ax.set_facecolor('black')
+
+ax.grid(color='grey', linestyle='--', linewidth=0.5)
+
+ax.legend(loc='lower right', fontsize=12, facecolor='black', edgecolor='white', labelcolor='white')
+
+ax.tick_params(axis='x', colors='white')
+ax.tick_params(axis='y', colors='white')
+
+plt.show()
